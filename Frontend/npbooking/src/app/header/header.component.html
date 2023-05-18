@@ -1,0 +1,85 @@
+<header class="bg-white sticky top-0 z-10">
+    <section [ngClass]="visibleBanner">
+        <div *ngIf="!isLogged" class="bg-rose-200 p-3 flex justify-between lg:justify-center items-center flex-wrap">
+            <div class="font-bold mr-8">🔥 Hot Deals!</div>
+            <div class="items-center hidden lg:flex">
+                <span class="leading-3">Đăng ký tài khoản ngay để nhận nhiều ưu đãi</span>
+            </div>
+            <a class="flex items-center ml-2 mr-8">
+                <a href="#"><span class="underline font-bold">Tìm hiểu thêm</span></a>
+            </a>
+            <a pRipple
+                class="flex items-center no-underline justify-center rounded-full hover:bg-bluegray-700 cursor-pointer transition-colors duration-150"
+                style="width: 2rem; height: 2rem" (click)="closeBanner()">
+                <i class="fa-solid fa-xmark"></i>
+            </a>
+        </div>
+    </section>
+    <nav class="p-3 flex justify-between items-center uppercase">
+        <div class="p-2 bg-rose-700 font-bold text-3xl rounded-lg text-white">
+            <a href="#">NPBooking</a>
+        </div>
+        <ul class="font-semibold text-base flex gap-8">
+            <li>
+                <a routerLink="/">Trang chủ</a>
+            </li>
+            <li>
+                <a href="">Bài viết</a>
+            </li>
+            <li>
+                <a *ngIf="userAuthService.roleMatch('ROLE_NV')" routerLink="/host">Quản lý</a>
+                <a *ngIf="userAuthService.roleMatch('ROLE_AD')" routerLink="/admin">Admin</a>
+            </li>
+        </ul>
+        <ng-container [ngSwitch]="isLogged">
+            <ng-container *ngSwitchCase="true">
+                <ng-container *ngIf="userState$ | async as userState" [ngSwitch]="userState.dataState">
+                    <ng-container *ngSwitchCase="DataState.LOADED_STATE">
+                        <ul class="flex items-center gap-4">
+                            <li>
+                                <i class="pi pi-bell text-2xl" pBadge value="2" severity="danger"></i>
+                            </li>
+                            <li>
+                                <p-overlayPanel #avt>
+                                    <ng-template pTemplate>
+                                        <ul class="divide-y">
+                                            <li>
+                                                <p>
+                                                    Chào, {{ userState.appData?.data?.firstName }}
+                                                    {{ userState.appData?.data?.lastName }}
+                                                </p>
+                                            </li>
+                                            <li>
+                                                <a routerLink="/user/profile">Tài khoản</a>
+                                            </li>
+                                            <li>
+                                                <a href="">Lịch sử</a>
+                                            </li>
+                                            <li>
+                                                <a class="cursor-pointer" (click)="logOut()">Đăng xuất</a>
+                                            </li>
+                                        </ul>
+                                    </ng-template>
+                                </p-overlayPanel>
+                                <p-avatar label="{{ userState.appData?.data?.firstName[0] }}" styleClass="mr-2"
+                                    size="large" shape="circle" (click)="avt.toggle($event)"></p-avatar>
+                            </li>
+                        </ul>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="DataState.LOADING_STATE">LOADING</ng-container>
+                    <ng-container *ngSwitchCase="DataState.ERROR_STATE">ERROR</ng-container>
+                </ng-container>
+            </ng-container>
+            <ng-container *ngSwitchCase="false">
+                <ul class="font-semibold text-base flex items-center gap-4">
+                    <li>
+                        <a routerLink="login">Đăng nhập</a>
+                    </li>
+                    <li>
+                        <a routerLink="register">Đăng kí</a>
+                    </li>
+                </ul>
+            </ng-container>
+        </ng-container>
+    </nav>
+</header>

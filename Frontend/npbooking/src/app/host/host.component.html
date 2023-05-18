@@ -1,0 +1,445 @@
+<p-toast></p-toast>
+<p-confirmPopup></p-confirmPopup>
+<div class="grid grid-cols-12 px-3 pt-3 gap-3 bg-emerald-50">
+    <div class="col-start-1 col-end-4">
+        <h1 class="text-4xl text-center text-white font-bold rounded-lg p-2 bg-rose-700">
+            <a routerLink="/">NPBOOKING</a>
+        </h1>
+    </div>
+    <div class="col-start-4 col-end-13">
+        <ng-container *ngIf="userState$ | async as userState" [ngSwitch]="userState.dataState">
+            <ng-container *ngSwitchCase="DataState.LOADING_STATE">
+                LOADING
+            </ng-container>
+            <ng-container *ngSwitchCase="DataState.LOADED_STATE">
+                <p-avatar class="float-right cursor-pointer" label="{{ userState.appData?.data.firstName[0] }}"
+                    shape="circle" size="large" (click)="op.toggle($event)"></p-avatar>
+                <p-overlayPanel #op>
+                    <ng-template pTemplate="content">
+                        <button pButton label="Đăng xuất" class="p-button-sm" (click)="logOut()"></button>
+                    </ng-template>
+                </p-overlayPanel>
+            </ng-container>
+            <ng-container *ngSwitchCase="DataState.ERROR_STATE">ERROR</ng-container>
+        </ng-container>
+    </div>
+</div>
+<section class="grid grid-cols-12 p-3 gap-3 bg-rose-50">
+
+    <div class="col-start-1 col-end-4">
+
+
+        <ng-container *ngIf="hotelState$ | async as hotelState" [ngSwitch]="hotelState.dataState">
+            <ng-container *ngSwitchCase="DataState.LOADING_STATE">
+                LOADING
+            </ng-container>
+            <ng-container *ngSwitchCase="DataState.LOADED_STATE">
+                <p-tree styleClass="p-inputtext-sm" [value]="treeLeft" [filter]="true" selectionMode="single"
+                    [(selection)]="selectedNodeTreeLeft" [contextMenu]="cmTreeLeft"
+                    (onNodeContextMenuSelect)="onNodeContextMenuSelectTreeLeft($event)"
+                    (onNodeSelect)="onNodeSelectTreeLeft($event)"></p-tree>
+                <p-contextMenu #cmTreeLeft [model]="contextMenuTreeLeft"
+                    (onHide)="clearContextMenuTreeLeft()"></p-contextMenu>
+            </ng-container>
+            <ng-container *ngSwitchCase="DataState.ERROR_STATE">ERROR</ng-container>
+        </ng-container>
+    </div>
+    <div class="col-start-4 col-end-13">
+        <p-tabView>
+            <p-tabPanel header="Thông tin">
+                <!-- <button (click)="manageImg('0')" class="mb-2 p-1 bg-green-500 text-white rounded-lg">Hình ảnh</button> -->
+                <form class="flex flex-col gap-3" [formGroup]="hotelForm" (ngSubmit)="addHotel()">
+                    <div class="flex items-center justify-between">
+                        <h1 class="font-bold text-xl">Khách sạn</h1>
+                        <div class="space-x-1">
+                            <button pButton label="Xoá" [disabled]="disabledDelete || hotelForm.invalid"
+                                class="p-button-sm p-button-danger w-[102px]"></button>
+                            <button pButton label="Lưu" [disabled]="disabledSave || hotelForm.invalid"
+                                class="p-button-sm w-[102px]"></button>
+                        </div>
+                    </div>
+
+                    <p-divider></p-divider>
+                    <span class="flex flex-col gap-1">
+                        <label htmlFor="name">Tên khách sạn</label>
+                        <input class="p-inputtext-sm" pInputText type="text" formControlName="name" id="name"
+                            aria-describedby="name-help" />
+                        <ng-container *ngIf="hotelForm.controls.name.touched && hotelForm.controls.name.dirty">
+                            <small class="text-rose-700" *ngIf="hotelForm.controls.name.errors?.['required']"
+                                id="name-help">Tên khách sạn không được trống!</small>
+                        </ng-container>
+                    </span>
+                    <span class="flex flex-col gap-1">
+                        <label htmlFor="description">Mô tả</label>
+                        <textarea class="p-inputtext-sm" id="description" formControlName="description" rows="3"
+                            cols="30" aria-describedby="description-help" pInputTextarea></textarea>
+                        <ng-container
+                            *ngIf="hotelForm.controls.description.touched && hotelForm.controls.description.dirty">
+                            <small class="text-rose-700" *ngIf="hotelForm.controls.description.errors?.['required']"
+                                id="description-help">Mô tả không được trống!</small>
+                        </ng-container>
+                    </span>
+                    <span class="flex flex-col gap-1">
+                        <label for="province">Tỉnh, thành phố</label>
+                        <p-dropdown styleClass="p-inputtext-sm w-full text-black" formControlName="province"
+                            inputId="province" placeholder="Chọn một tỉnh, thành phố" [options]="provinces"
+                            optionValue="id" optionLabel="name" aria-describedby="province-help"></p-dropdown>
+                        <ng-container *ngIf="hotelForm.controls.province.touched && hotelForm.controls.province.dirty">
+                            <small class="text-rose-700" *ngIf="hotelForm.controls.province.errors?.['required']"
+                                id="province-help">Tỉnh, thành phố không được trống!</small>
+                        </ng-container>
+                    </span>
+                    <span class="flex flex-col gap-1">
+                        <label htmlFor="address">Địa chỉ</label>
+                        <input class="p-inputtext-sm" pInputText type="text" formControlName="address" id="address"
+                            aria-describedby="address-help" />
+                        <ng-container *ngIf="hotelForm.controls.address.touched && hotelForm.controls.address.dirty">
+                            <small class="text-rose-700" *ngIf="hotelForm.controls.address.errors?.['required']"
+                                id="name-help">Địa chỉ không được trống!</small>
+                        </ng-container>
+                    </span>
+                    <span class="flex flex-col gap-1">
+                        <label htmlFor="distanceCenter">Cách trung tâm</label>
+                        <p-inputNumber styleClass="w-full" inputId="distanceCenter" suffix=" km"
+                            formControlName="distanceCenter" aria-describedby="distanceCenter-help"></p-inputNumber>
+                        <ng-container
+                            *ngIf="hotelForm.controls.distanceCenter.touched && hotelForm.controls.distanceCenter.dirty">
+                            <small class="text-rose-700" *ngIf="hotelForm.controls.distanceCenter.errors?.['required']"
+                                id="star-help">Cách trung tâm không được trống!</small>
+                        </ng-container>
+                    </span>
+                    <span class="flex flex-col gap-1">
+                        <label htmlFor="benefit">Các tiện nghi</label>
+                        <p-multiSelect id="benefit" formControlName="benefit" aria-describedby="benefit-help"
+                            styleClass="w-full" [options]="benefits" defaultLabel="Chọn các tiện nghi"
+                            optionLabel="name" optionValue="code" display="chip">
+                        </p-multiSelect>
+                        <ng-container *ngIf="hotelForm.controls.benefit.touched && hotelForm.controls.benefit.dirty">
+                            <small class="text-rose-700" *ngIf="hotelForm.controls.benefit.errors?.['required']"
+                                id="benefit-help">Các tiện nghi không được trống!</small>
+                        </ng-container>
+                    </span>
+                    <div class="flex items-center justify-between">
+                        <span class="flex flex-col gap-1">
+                            <label htmlFor="star">Số sao</label>
+                            <p-rating [cancel]="false" formControlName="star" id="star"
+                                aria-describedby="star-help"></p-rating>
+                            <ng-container *ngIf="hotelForm.controls.star.touched && hotelForm.controls.star.dirty">
+                                <small class="text-rose-700" *ngIf="hotelForm.controls.star.errors?.['required']"
+                                    id="star-help">Số sao không được trống!</small>
+                            </ng-container>
+                        </span>
+                        <span class="flex flex-col gap-1">
+                            <label htmlFor="breakfast">Bữa sáng</label>
+                            <p-inputSwitch id="breakfast" formControlName="breakfast"></p-inputSwitch>
+                        </span>
+                        <span class="flex flex-col gap-1">
+                            <label htmlFor="sustainTour">Du lịch bền vững</label>
+                            <p-inputSwitch id="sustainTour" formControlName="sustainTour"></p-inputSwitch>
+                        </span>
+                        <span class="flex flex-col gap-1">
+                            <label htmlFor="sea">Giáp biển</label>
+                            <p-inputSwitch id="sea" formControlName="sea"></p-inputSwitch>
+                        </span>
+                    </div>
+                </form>
+                <!-- <form class="flex flex-col gap-3" [formGroup]="hotelDetailForm" (ngSubmit)="editHotelDetail()">
+                    <div class="flex">
+                        <label class="min-w-[200px]" for="name">Tên khách sạn</label>
+                        <input class="border-2 flex-1 border-black rounded-lg" type="text" formControlName="name"
+                            id="name" />
+                    </div>
+                    <div class="flex">
+                        <label class="min-w-[200px]" for="description">Mô tả</label>
+                        <textarea class="border-2 flex-1 border-black rounded-lg" type="text"
+                            formControlName="description" id="description"></textarea>
+                    </div>
+                    <div class="flex">
+                        <label class="min-w-[200px]" for="province">Tỉnh, thành phố</label>
+                        <select class="border-2 flex-1 border-black rounded-lg" formControlName="province"
+                            id="province">
+                            <option *ngFor="let province of provinces" value="{{ province.id }}">
+                                {{ province.name }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="flex">
+                        <label class="min-w-[200px]" for="name">Địa chỉ</label>
+                        <input class="border-2 flex-1 border-black rounded-lg" type="text" formControlName="address"
+                            id="address" />
+                    </div>
+                    <div class="flex">
+                        <label class="min-w-[200px]" for="benefit">Các tiện nghi</label>
+                        <p-chips id="benefit" separator="," formControlName="benefit"></p-chips>
+                    </div>
+                    <div class="flex">
+                        <label class="min-w-[200px]" for="star">Số sao</label>
+                        <input class="border-2 flex-1 border-black rounded-lg" type="number" formControlName="star"
+                            id="star" />
+                    </div>
+                    <div class="flex">
+                        <label class="min-w-[200px]" for="breakfast">Bữa sáng</label>
+                        <p-inputSwitch id="breakfast" formControlName="breakfast"></p-inputSwitch>
+                    </div>
+                    <div class="flex">
+                        <label class="min-w-[200px]" for="distanceCenter">Cách trung tâm</label>
+                        <input class="border-2 flex-1 border-black rounded-lg" type="number"
+                            formControlName="distanceCenter" id="distanceCenter" />
+                    </div>
+                    <div class="flex">
+                        <label class="min-w-[200px]" for="sustainTour">Du lịch bền vững</label>
+                        <p-inputSwitch id="sustainTour" formControlName="sustainTour"></p-inputSwitch>
+                    </div>
+                    <div class="flex">
+                        <label class="min-w-[200px]" for="sea">Giáp biển</label>
+                        <p-inputSwitch id="sea" formControlName="sea"></p-inputSwitch>
+                    </div>
+                    <div class="flex items-center justify-center gap-20">
+                        <a class="p-2 cursor-pointer rounded-lg bg-rose-700 text-white" (click)="deleteHotel()">Xoá
+                            khách sạn</a>
+                        <button class="p-2 rounded-lg bg-rose-700 text-white" type="submit">
+                            Lưu thay đổi
+                        </button>
+                    </div>
+                </form> -->
+            </p-tabPanel>
+            <p-tabPanel header="Loại phòng">
+                <ng-container *ngIf="roomState$ | async as roomState" [ngSwitch]="roomState.dataState">
+                    <ng-container *ngSwitchCase="DataState.LOADING_STATE">
+                        LOADING
+                    </ng-container>
+                    <ng-container *ngSwitchCase="DataState.LOADED_STATE">
+                        <button (click)="showAddRoom()" class="p-1 mb-2 rounded-lg bg-green-500 text-white">
+                            Thêm loại phòng
+                        </button>
+                        <div class="grid grid-cols-3 gap-5">
+                            <div class="border-2 p-2 border-black rounded-lg"
+                                *ngFor="let room of roomState.appData?.data">
+                                <div class="flex justify-end gap-5">
+                                    <button (click)="deleteRoom(room.id)" class="bg-rose-700 p-1 text-white rounded-lg">
+                                        Xoá
+                                    </button>
+                                    <button (click)="showEditRoom(room.id)"
+                                        class="bg-yellow-500 text-white p-1 rounded-lg">
+                                        Cập nhật
+                                    </button>
+                                    <button (click)="manageImg(room.id)" class="bg-green-500 text-white p-1 rounded-lg">
+                                        Hình ảnh
+                                    </button>
+                                </div>
+                                <p class="font-bold">{{ room.type }}</p>
+                                <div class="flex">
+                                    <p class="min-w-[120px]">Giá:</p>
+                                    VND {{ room.price }}
+                                </div>
+                                <div class="flex">
+                                    <p class="min-w-[120px]">Giá giảm:</p>
+                                    VND {{ room.discount }}
+                                </div>
+                                <div class="flex">
+                                    <p class="min-w-[120px]">Diện tích:</p>
+                                    {{ room.size }}
+                                </div>
+                                <div class="flex">
+                                    <p class="min-w-[120px]">Sức chứa:</p>
+                                    {{ room.peopleNumber }} người
+                                </div>
+                                <div class="flex">
+                                    <p class="min-w-[120px]">Số giường đơn:</p>
+                                    {{ room.singleBed }} chiếc
+                                </div>
+                                <div class="flex">
+                                    <p class="min-w-[120px]">Số giường đôi:</p>
+                                    {{ room.doubleBed }} chiếc
+                                </div>
+                                <div class="flex">
+                                    <p class="min-w-[120px]">Số lượng:</p>
+                                    {{ room.quantity }} phòng
+                                </div>
+                                <div class="flex">
+                                    <p class="min-w-[120px]">Tiện nghi phòng:</p>
+                                    {{ room.benefitRoom }}
+                                </div>
+                                <div class="flex">
+                                    <p class="min-w-[120px]">Trong phòng tắm:</p>
+                                    {{ room.bathRoom }}
+                                </div>
+                                <div class="flex">
+                                    <p class="min-w-[120px]">Hướng tầm nhìn:</p>
+                                    {{ room.view }}
+                                </div>
+                                <div class="flex">
+                                    <p class="min-w-[120px]">Tiện ích:</p>
+                                    {{ room.convenient }}
+                                </div>
+                                <div class="flex">
+                                    <p class="min-w-[120px]">Hút thuốc:</p>
+                                    {{ room.smoking }}
+                                </div>
+                            </div>
+                        </div>
+                        <p-dialog header="Loại phòng" [(visible)]="displayEditRoom" [modal]="true"
+                            [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+                            <form class="flex flex-col gap-3" [formGroup]="roomForm" (ngSubmit)="editRoom()">
+                                <div class="flex">
+                                    <label class="min-w-[200px]" for="type">Loại phòng</label>
+                                    <input class="border-2 flex-1 border-black rounded-lg" type="text"
+                                        formControlName="type" id="type" />
+                                </div>
+                                <div class="flex">
+                                    <label class="min-w-[200px]" for="price">Giá</label>
+                                    <input class="border-2 flex-1 border-black rounded-lg" type="number"
+                                        formControlName="price" id="price" />
+                                </div>
+                                <div class="flex">
+                                    <label class="min-w-[200px]" for="discount">Giá giảm</label>
+                                    <input class="border-2 flex-1 border-black rounded-lg" type="number"
+                                        formControlName="discount" id="discount" />
+                                </div>
+                                <div class="flex">
+                                    <label class="min-w-[200px]" for="size">Diện tích</label>
+                                    <input class="border-2 flex-1 border-black rounded-lg" type="text"
+                                        formControlName="size" id="size" />
+                                </div>
+                                <div class="flex">
+                                    <label class="min-w-[200px]" for="peopleNumber">Sức chứa</label>
+                                    <input class="border-2 flex-1 border-black rounded-lg" type="number"
+                                        formControlName="peopleNumber" id="peopleNumber" />
+                                </div>
+                                <div class="flex">
+                                    <label class="min-w-[200px]" for="singleBed">Số giường đơn</label>
+                                    <input class="border-2 flex-1 border-black rounded-lg" type="number"
+                                        formControlName="singleBed" id="singleBed" />
+                                </div>
+                                <div class="flex">
+                                    <label class="min-w-[200px]" for="doubleBed">Số giường đôi</label>
+                                    <input class="border-2 flex-1 border-black rounded-lg" type="number"
+                                        formControlName="doubleBed" id="doubleBed" />
+                                </div>
+                                <div class="flex">
+                                    <label class="min-w-[200px]" for="quantity">Số lượng</label>
+                                    <input class="border-2 flex-1 border-black rounded-lg" type="number"
+                                        formControlName="quantity" id="quantity" />
+                                </div>
+                                <div class="flex">
+                                    <label class="min-w-[200px]" for="benefitRoom">Các tiện nghi</label>
+                                    <p-chips id="benefitRoom" separator="," formControlName="benefitRoom"></p-chips>
+                                </div>
+                                <div class="flex">
+                                    <label class="min-w-[200px]" for="bathRoom">Trong phòng tắm</label>
+                                    <p-chips id="bathRoom" separator="," formControlName="bathRoom"></p-chips>
+                                </div>
+                                <div class="flex">
+                                    <label class="min-w-[200px]" for="view">Hướng tầm nhìn</label>
+                                    <p-chips id="view" separator="," formControlName="view"></p-chips>
+                                </div>
+                                <div class="flex">
+                                    <label class="min-w-[200px]" for="convenient">Tiện ích</label>
+                                    <p-chips id="convenient" separator="," formControlName="convenient"></p-chips>
+                                </div>
+                                <div class="flex">
+                                    <label class="min-w-[200px]" for="smoking">Hút thuốc</label>
+                                    <p-inputSwitch id="smoking" formControlName="smoking"></p-inputSwitch>
+                                </div>
+                                <button class="p-2 rounded-lg bg-rose-700 text-white" type="submit">
+                                    Lưu
+                                </button>
+                            </form>
+                        </p-dialog>
+
+                    </ng-container>
+                    <ng-container *ngSwitchCase="DataState.ERROR_STATE">
+                        ERROR
+                    </ng-container>
+                </ng-container>
+            </p-tabPanel>
+            <p-tabPanel header="Trạng thái phòng">
+                <ng-container *ngIf="bookingState$ | async as bookingState" [ngSwitch]="bookingState.dataState">
+                    <ng-container *ngSwitchCase="DataState.LOADING_STATE">
+                        LOADING
+                    </ng-container>
+                    <ng-container *ngSwitchCase="DataState.LOADED_STATE">
+                        <p-table [value]="bookingState.appData?.data" [tableStyle]="{ 'min-width': '60rem' }">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Nhận phòng</th>
+                                    <th>Trả phòng</th>
+                                    <th>Tổng cộng</th>
+                                    <th>Trạng thái</th>
+                                    <th></th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-booking>
+                                <tr>
+                                    <td>{{ booking.dateIn }}</td>
+                                    <td>{{ booking.dateOut }}</td>
+                                    <td>{{ booking.sumPrice }}</td>
+                                    <td>
+                                        <p class="text-white text-center" [ngClass]="[
+                        booking.status === Booking.CONFIRMED
+                          ? 'bg-green-500'
+                          : 'bg-rose-700'
+                      ]">
+                                            {{ booking.status }}
+                                        </p>
+                                    </td>
+                                    <td>
+                                        <button *ngIf="booking.status !== Booking.CONFIRMED"
+                                            (click)="updateBookingStatus(booking.id)"
+                                            class="bg-yellow-500 text-white p-1 rounded-lg">
+                                            Cập Nhật
+                                        </button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="summary">
+                                <div class="flex align-items-center justify-content-between">
+                                    Tổng cộng
+                                    {{
+                                    bookingState.appData?.data
+                                    ? bookingState.appData?.data.length
+                                    : 0
+                                    }}
+                                    đơn.
+                                </div>
+                            </ng-template>
+                        </p-table>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="DataState.ERROR_STATE">
+                        ERROR
+                    </ng-container>
+                </ng-container>
+            </p-tabPanel>
+        </p-tabView>
+    </div>
+</section>
+
+<p-sidebar [(visible)]="displayManageImgRoom" [fullScreen]="true">
+    <ng-template pTemplate="header">Thêm hình ảnh cho phòng này</ng-template>
+
+    <p-fileUpload #form name="file[]" mode="advanced" uploadStyleClass="bg-green-500" cancelStyleClass="bg-rose-700"
+        [customUpload]="true" (uploadHandler)="onUpload($event, form)" [multiple]="true" accept="image/*"
+        [maxFileSize]="1000000">
+    </p-fileUpload>
+    <ng-container *ngIf="imgRoomState$ | async as imgRoomState" [ngSwitch]="imgRoomState.dataState">
+        <ng-container *ngSwitchCase="DataState.LOADING_STATE">
+            LOADING
+        </ng-container>
+        <ng-container *ngSwitchCase="DataState.LOADED_STATE">
+            <p>Tổng {{ imgRoomState.appData?.data.length }} ảnh</p>
+            <div class="grid grid-cols-4 gap-2">
+                <div class="group relative" *ngFor="let img of imgRoomState.appData?.data">
+                    <p-image [imageClass]="'rounded-lg w-[360px] h-[240px]'" src="{{ img.link }}" alt="Image"
+                        [preview]="true"></p-image>
+
+                    <button (click)="deleteImage($event, img.id)"
+                        class="bg-rose-700 text-white p-1 m-3 rounded-lg absolute top-0 right-0 hidden group-hover:block">Xoá</button>
+
+                </div>
+            </div>
+        </ng-container>
+        <ng-container *ngSwitchCase="DataState.ERROR_STATE">
+            ERROR
+        </ng-container>
+    </ng-container>
+</p-sidebar>

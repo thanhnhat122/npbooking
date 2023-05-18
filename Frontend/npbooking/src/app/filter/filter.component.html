@@ -1,0 +1,284 @@
+<div class="grid grid-cols-12 gap-6">
+  <div class="col-start-1 col-end-4 flex flex-col gap-2">
+    <div class="border p-4 bg-rose-200 rounded-lg">
+      <p class="text-2xl font-bold text-center">Tìm</p>
+      <div class="flex flex-col gap-3">
+        <div>
+          <label for="place">Tên chỗ nghỉ, địa điểm</label>
+          <div class="flex items-center bg-white rounded-lg">
+            <i class="fa-solid fa-magnifying-glass text-2xl pl-1"></i>
+            <!-- <input
+              class="w-full h-9 pl-3 outline-none rounded-r-lg"
+              type="text"
+              name="place"
+              id="place"
+            /> -->
+            <select [(ngModel)]="provinceId" class="flex-1 h-9 outline-none border-black rounded-lg" id="province">
+              <option *ngFor="let province of provinces" value="{{ province.id }}">
+                {{ province.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label for="range">Nhận phòng - Trả phòng</label>
+          <div class="flex justify-between items-center rounded-lg bg-white">
+            <i class="fa-regular fa-calendar text-2xl pl-1"></i>
+            <p-calendar
+              [(ngModel)]="rangeDates"
+              styleClass="w-full h-9"
+              inputStyleClass="shadow-none w-full text-center border-none rounded-lg"
+              selectionMode="range"
+              [readonlyInput]="true"
+              inputId="range"
+              [numberOfMonths]="2"
+            ></p-calendar>
+          </div>
+        </div>
+        <div>
+          <label for="place">Số người</label>
+          <div class="flex bg-white items-center rounded-lg">
+            <i class="fa-regular fa-user text-2xl pl-1"></i>
+            <input
+              [(ngModel)]="numPeople"
+              class="w-full h-9 pl-3 outline-none rounded-lg"
+              type="text"
+              name="numPeople"
+              id="numPeople"
+            />
+          </div>
+        </div>
+        <button
+          class="w-full mt-1 py-2 rounded-md bg-rose-700 text-white font-bold text-lg"
+          (click)="search()"
+        >
+          Tìm kiếm
+        </button>
+      </div>
+    </div>
+    <div class="border p-4 rounded-lg divide-y grid grid-cols-1 gap-5">
+      <p class="font-bold text-2xl text-center">Lọc</p>
+      <div class="pt-3">
+        <p>Ngân sách của bạn (mỗi đêm)</p>
+        <div class="flex">
+          <p-inputSwitch [(ngModel)]="checked"></p-inputSwitch>
+          <p>Tự chỉnh ngân sách</p>
+        </div>
+        <ng-container [ngSwitch]="checked">
+          <ng-container *ngSwitchCase="true">
+            <h5>
+              {{ "VND " + rangePrices[0] + " - " + "VND " + rangePrices[1] }}
+            </h5>
+            <p-slider
+              (onSlideEnd)="rangePrice()"
+              [(ngModel)]="rangePrices"
+              [min]="200000"
+              [max]="8000000"
+              [step]="100000"
+              [range]="true"
+            ></p-slider
+          ></ng-container>
+          <ng-container *ngSwitchCase="false">
+            <div *ngFor="let price of priceFilter" class="flex gap-3">
+              <input
+                (change)="filterPrice(price.id)"
+                [checked]="price.checked"
+                type="radio"
+                name="price-radio-group"
+                id="{{ price.id }}"
+              />
+              <label for="{{ price.id }}">{{ price.name }}</label>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+      <div class="pt-3">
+        <p>Xếp hạng sao</p>
+        <div *ngFor="let star of starFilter" class="flex gap-3">
+          <input
+            (change)="filterStar()"
+            value="{{ star.value }}"
+            type="checkbox"
+            name="{{ star.id }}"
+            id="{{ star.id }}"
+            [(ngModel)]="star.checked"
+          />
+          <label for="{{ star.id }}">{{ star.name }}</label>
+        </div>
+      </div>
+      <div class="pt-3">
+        <p>Cách trung tâm</p>
+        <div
+          *ngFor="let distanceCenter of distanceCenterFilter"
+          class="flex gap-3"
+        >
+          <input
+            (change)="filterDistanceCenter(distanceCenter.id)"
+            [checked]="distanceCenter.checked"
+            type="radio"
+            name="distanceCenter-radio-group"
+            id="{{ distanceCenter.id }}"
+          />
+          <label for="{{ distanceCenter.id }}">{{ distanceCenter.name }}</label>
+        </div>
+      </div>
+      <div class="pt-3">
+        <p>Điểm đánh giá</p>
+        <div *ngFor="let score of scoreFilter" class="flex gap-3">
+          <input
+            (change)="filterScore(score.id)"
+            [checked]="score.checked"
+            type="radio"
+            name="score-radio-group"
+            id="{{ score.id }}"
+          />
+          <label for="{{ score.id }}">{{ score.name }}</label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-start-4 col-end-13 flex flex-col gap-5">
+    <ng-container
+      *ngIf="provinceState$ | async as provinceState"
+      [ngSwitch]="provinceState.dataState"
+      ><ng-container *ngSwitchCase="DataState.LOADING_STATE"
+        >LOADING </ng-container
+      ><ng-container *ngSwitchCase="DataState.LOADED_STATE"
+        ><p class="text-3xl font-bold">
+          {{ namePlace }}: Tìm thấy
+          {{ numPlace }} chỗ nghỉ
+        </p> </ng-container
+      ><ng-container *ngSwitchCase="DataState.ERROR_STATE">ERROR </ng-container>
+    </ng-container>
+
+    <p-dropdown
+      [styleClass]="'rounded-3xl text-left'"
+      dropdownIcon="fa-solid fa-sort"
+      [options]="cities"
+      optionLabel="name"
+    ></p-dropdown>
+    <ng-container
+      *ngIf="filterState$ | async as filterState"
+      [ngSwitch]="filterState.dataState"
+    >
+      <ng-container *ngSwitchCase="DataState.LOADING_STATE"
+        >LOADING
+      </ng-container>
+      <ng-container *ngSwitchCase="DataState.LOADED_STATE">
+        <div
+          *ngFor="let filter of filterState.appData?.data"
+          class="border rounded-lg grid grid-cols-4 p-3 gap-5 border-gray-300"
+        >
+          <img
+            class="object-fill w-56 h-56 rounded-md"
+            src="{{ filter.image }}"
+            alt=""
+          />
+          <div class="col-span-2 flex flex-col gap-3">
+            <p class="text-2xl font-bold">{{ filter.name }}</p>
+            <div class="flex gap-1">
+              <i
+                *ngFor="let _ of [].constructor(filter.star)"
+                class="fa-solid fa-star text-yellow-300"
+              ></i>
+            </div>
+            <div>
+              <p>
+                <i class="fa-solid fa-map-location-dot"></i> Cách trung tâm
+                {{ filter.distanceCenter }} km
+              </p>
+              <p *ngIf="filter.sea">
+                <i class="fa-solid fa-umbrella-beach"></i> Giáp biển
+              </p>
+              <p *ngIf="filter.sustainTour">
+                <i class="fa-solid fa-leaf"></i> Chỗ nghỉ Du lịch bền vững
+              </p>
+            </div>
+            <div *ngIf="filter.room.remainRoom < 10" class="border-l-2 px-3">
+              <p class="font-bold">{{ filter.room.type }}</p>
+              <p *ngIf="filter.room.doubleBed > 0" class="text-sm">
+                {{ filter.room.doubleBed }} giường đôi
+              </p>
+              <p *ngIf="filter.room.singleBed > 0" class="text-sm">
+                {{ filter.room.doubleBed }} giường đơn
+              </p>
+              <p
+                *ngIf="filter.room.remainRoom < 10"
+                class="bg-rose-700 mt-1 text-white font-bold rounded-full px-2 w-max"
+              >
+                <i class="fa-brands fa-hotjar text-yellow-400"></i> Còn
+                {{ filter.room.remainRoom }} phòng
+              </p>
+            </div>
+          </div>
+          <div class="flex flex-col items-end gap-10">
+            <div class="flex">
+              <div class="flex flex-col items-end">
+                <p class="flex-1 text-lg font-bold">
+                  <ng-container
+                    *ngIf="filter.score > 9; then above9; else block2"
+                  ></ng-container>
+                  <ng-template #above9>Tuyệt hảo</ng-template>
+                  <ng-template #block2>
+                    <ng-container
+                      *ngIf="filter.score > 8; then above8; else block3"
+                    ></ng-container>
+                    <ng-template #above8>Rất tốt</ng-template>
+                    <ng-template #block3>
+                      <ng-container
+                        *ngIf="filter.score > 7; then above7; else block4"
+                      ></ng-container>
+                      <ng-template #above7>Tốt</ng-template>
+                      <ng-template #block4>Dễ chịu</ng-template>
+                    </ng-template>
+                  </ng-template>
+                </p>
+                <p class="flex-1 text-sm">{{ filter.numReview }} đánh giá</p>
+              </div>
+              <div
+                class="ml-2 text-white font-bold self-center p-2 rounded-t-lg rounded-br-lg bg-rose-700 row-span-2"
+              >
+                {{ filter.score | number : '1.1-1'}}
+              </div>
+            </div>
+            <div class="flex flex-col items-end">
+              <p class="text-sm">
+                {{ filter.numNight }} đêm, {{ numPeople }} người
+              </p>
+              <p class="text-rose-700 line-through">
+                VND
+                {{
+                  (filter.room.price * filter.numNight | number)
+                    ?.replace(",", "x")
+                    ?.replace(",", ".")
+                    ?.replace("x", ".")
+                }}
+              </p>
+              <p class="text-2xl font-bold">
+                VND
+                {{
+                  (
+                    (filter.room.price - filter.room.discount) * filter.numNight
+                    | number
+                  )
+                    ?.replace(",", "x")
+                    ?.replace(",", ".")
+                    ?.replace("x", ".")
+                }}
+              </p>
+              <p class="text-sm">Đã bao gồm thuế và phí</p>
+              <button
+                routerLink="{{ filter.id }}"
+                class="bg-rose-700 px-4 py-2 mt-2 rounded-md text-white"
+              >
+                Xem chỗ trống <i class="pl-3 fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngSwitchCase="DataState.ERROR_STATE">ERROR </ng-container>
+    </ng-container>
+  </div>
+</div>

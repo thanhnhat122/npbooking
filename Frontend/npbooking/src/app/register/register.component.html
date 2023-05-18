@@ -1,0 +1,108 @@
+<p-toast/>
+    <div class="grid grid-cols-12 gap-3 bg-rose-50 p-3 content-center h-screen">
+        <div class="col-span-7 flex flex-col">
+            <a routerLink="" class="p-2 rounded-lg bg-rose-700 text-6xl font-black text-white mx-auto">NPBOOKING</a>
+            <div class="grid grid-cols-2 gap-3 place-content-center h-full">
+                <p-card class="text-center">
+                    <i class="fa-regular fa-credit-card text-3xl text-white bg-rose-700 p-3 rounded-full"></i>
+                    <h1 class="text-lg font-bold">Thanh toán online</h1>
+                    <small>Hỗ trợ nhiều loại thanh toán</small>
+                </p-card>
+                <p-card class="text-center">
+                    <i class="fa-regular fa-credit-card text-3xl text-white bg-rose-700 p-3 rounded-full"></i>
+                    <h1 class="text-lg font-bold">Thanh toán online</h1>
+                    <small>Hỗ trợ nhiều loại thanh toán</small>
+                </p-card>
+                <p-card class="text-center">
+                    <i class="fa-regular fa-credit-card text-3xl text-white bg-rose-700 p-3 rounded-full"></i>
+                    <h1 class="text-lg font-bold">Thanh toán online</h1>
+                    <small>Hỗ trợ nhiều loại thanh toán</small>
+                </p-card>
+                <p-card class="text-center">
+                    <i class="fa-regular fa-credit-card text-3xl text-white bg-rose-700 p-3 rounded-full"></i>
+                    <h1 class="text-lg font-bold">Thanh toán online</h1>
+                    <small>Hỗ trợ nhiều loại thanh toán</small>
+                </p-card>
+            </div>
+        </div>
+        <p-card class="self-center col-span-5" header="Đăng kí tài khoản">
+            <form [formGroup]="registerForm" (ngSubmit)="register()" action="#" class="space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                    <span class="flex flex-col gap-1">
+                        <label htmlFor="last_name">Họ</label>
+                        <input class="p-inputtext-sm" pInputText type="text" formControlName="lastName" id="last_name"
+                            aria-describedby="lastName-help" />
+                        <ng-container
+                            *ngIf="registerForm.controls.lastName.touched && registerForm.controls.lastName.dirty">
+                            <small class="text-rose-700" *ngIf="registerForm.controls.lastName.errors?.['required']"
+                                id="lastName-help">Họ không được trống!</small>
+                        </ng-container>
+                    </span>
+                    <span class="flex flex-col gap-1">
+                        <label htmlFor="first_name">Tên</label>
+                        <input class="p-inputtext-sm" pInputText type="text" formControlName="firstName" id="first_name"
+                            aria-describedby="firstName-help" />
+                        <ng-container
+                            *ngIf="registerForm.controls.firstName.touched && registerForm.controls.firstName.dirty">
+                            <small class="text-rose-700" *ngIf="registerForm.controls.firstName.errors?.['required']"
+                                id="firstName-help">Tên không được trống!</small>
+                        </ng-container>
+                    </span>
+                </div>
+                <span class="flex flex-col gap-1">
+                    <label htmlFor="email">Email</label>
+                    <input class="p-inputtext-sm" pInputText type="email" formControlName="email" id="email"
+                        aria-describedby="email-help" />
+                    <ng-container *ngIf="registerForm.controls.email.touched && registerForm.controls.email.dirty">
+                        <small class="text-rose-700" *ngIf="registerForm.controls.email.errors?.['required']"
+                            id="email-help">Email không được trống!</small>
+                        <small class="text-rose-700" *ngIf="registerForm.controls.email.errors?.['pattern']"
+                            id="email-help">Email không hợp lệ!</small>
+                    </ng-container>
+                </span>
+                <span class="flex flex-col gap-1">
+                    <label htmlFor="phone">Số điện thoại</label>
+                    <input class="p-inputtext-sm" pInputText type="text" formControlName="phone" id="phone"
+                        aria-describedby="phone-help" />
+                    <ng-container *ngIf="registerForm.controls.phone.touched && registerForm.controls.phone.dirty">
+                        <small class="text-rose-700" *ngIf="registerForm.controls.phone.errors?.['required']"
+                            id="phone-help">Số điện thoại không được trống!</small>
+                        <small class="text-rose-700" *ngIf="registerForm.controls.phone.errors?.['pattern']"
+                            id="phone-help">Số điện thoại không hợp lệ!</small>
+                    </ng-container>
+                </span>
+                <div class="grid grid-cols-2 gap-3">
+                    <span class="flex flex-col gap-1">
+                        <label htmlFor="password">Mật khẩu</label>
+                        <p-password class="p-inputtext-sm" inputStyleClass="w-full" styleClass="w-full" [toggleMask]="true" formControlName="password"
+                            id="password"></p-password>
+                        <ng-container
+                            *ngIf="registerForm.controls.password.touched && registerForm.controls.password.dirty">
+                            <small class="text-rose-700" *ngIf="registerForm.controls.password.errors?.['required']"
+                                id="password-help">Mật khẩu không được trống!</small>
+                            <small class="text-rose-700" *ngIf="registerForm.controls.password.errors?.['pattern']"
+                                id="password-help">Mật khẩu không hợp lệ!</small>
+                        </ng-container>
+                    </span>
+                    <span class="flex flex-col gap-1">
+                        <label htmlFor="confirm_password">Xác nhận mật khẩu</label>
+                        <p-password class="p-inputtext-sm" inputStyleClass="w-full" styleClass="w-full" [toggleMask]="true" [feedback]="false"
+                            formControlName="confirm_password" id="confirm_password"></p-password>
+                    </span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-start">
+                        <p-checkbox label="Lưu đăng nhập" [binary]="true"></p-checkbox>
+                    </div>
+                    <a href="#" class="text-sm font-medium text-primary-600 hover:underline">Quên mật
+                        khẩu?</a>
+                </div>
+                <button pButton label="Đăng ký" [disabled]="registerForm.invalid" [loading]="loadingReg"
+                    class="p-button-sm w-full bg-rose-700 border-none"></button>
+                <p class="text-sm font-light text-gray-500"> Đã có tài khoản? <a routerLink="/login"
+                        class="font-medium text-primary-600 hover:underline">Đăng nhập</a>
+                </p>
+            </form>
+        </p-card>
+
+    </div>

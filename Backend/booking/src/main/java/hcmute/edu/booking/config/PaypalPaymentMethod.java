@@ -1,0 +1,5 @@
+package hcmute.edu.booking.config;
+
+public enum PaypalPaymentMethod {
+    credit_card, paypal
+}

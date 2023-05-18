@@ -1,0 +1,76 @@
+<section class="grid grid-cols-12">
+  <div class="col-start-1 col-end-3 m-2">
+    <h1
+      class="text-4xl text-center text-white font-bold p-2 mb-5 rounded-lg bg-rose-700"
+    >
+      <a routerLink="/">NPBOOKING</a>
+    </h1>
+    <ng-container
+      *ngIf="userState$ | async as userState"
+      [ngSwitch]="userState.dataState"
+    >
+      <ng-container *ngSwitchCase="DataState.LOADING_STATE">
+        LOADING
+      </ng-container>
+      <ng-container *ngSwitchCase="DataState.LOADED_STATE">
+        <div class="flex justify-evenly mb-5">
+          <p-avatar
+            label="{{ userState.appData?.data.firstName[0] }}"
+            shape="circle"
+            size="xlarge"
+          ></p-avatar>
+          <div>
+            <p class="text-2xl font-bold">
+              {{
+                userState.appData?.data.firstName +
+                  " " +
+                  userState.appData?.data.lastName
+              }}
+            </p>
+            <button
+              (click)="logOut()"
+              class="p-1 mt-1 bg-rose-700 rounded-lg text-white"
+            >
+              Đăng xuất
+            </button>
+          </div>
+
+        </div></ng-container
+      ><ng-container *ngSwitchCase="DataState.ERROR_STATE"> </ng-container
+
+    ></ng-container>
+    <!-- <div class = "nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+      <button class="bg-green-500 text-white p-1 text-center w-full rounded-lg active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#Admin" type="button" role="tab">Quản trị viên</button>
+    <button class="bg-green-500 text-white p-1 text-center w-full rounded-lg mt-2" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#Staff" type="button" role="tab">Chủ khách sạn</button>
+    <button class="bg-green-500 text-white p-1 text-center w-full rounded-lg mt-2" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#Customer" type="button" role="tab">Khách hàng</button>
+    </div> -->
+    <div class="nav  nav-pills bg-rose-700 " id="v-pills-tab" role="tablist" aria-orientation="vertical">
+      <button class="nav-link text-white p-1 text-center w-full rounded-lg active " id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home"
+        type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">Quản trị viên</button>
+      <button class="nav-link  text-white p-1 text-center w-full rounded-lg mt-2" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile"
+        type="button" role="tab" aria-controls="v-pills-cart-history" aria-selected="false">Chủ khách sạn</button>
+      <button class="nav-link text-white p-1 text-center w-full rounded-lg mt-2" id="v-pills-settings-tab" data-bs-toggle="pill" data-bs-target="#v-pills-settings"
+        type="button" role="tab" aria-controls="v-pills-settings" aria-selected="false">Khách hàng</button>
+    </div>
+
+  </div>
+    <div class="col-start-3 col-end-13 bg-green-400 m-2">
+    <!-- <div class="tab-content" id="v-pills-tabContent" >
+      <div class="tab-pane fade show " id="Admin" role="tabpanel" >a</div>
+      <div class="tab-pane fade" id="Staff" role="tabpanel" >b</div>
+      <div class="tab-pane fade" id="Customer" role="tabpanel" >c</div>
+    </div> -->
+
+  <div class="tab-content" id="v-pills-tabContent">
+    <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+      <app-admin-admin></app-admin-admin>
+    </div>
+    <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+      <app-admin-host></app-admin-host>
+    </div>
+    <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
+    <app-admin-user></app-admin-user>
+    </div>
+  </div>
+</div>
+</section>

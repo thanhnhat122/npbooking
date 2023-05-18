@@ -1,0 +1,44 @@
+<section class="grid grid-cols-12">
+  <div class="col-start-1 col-end-3">
+    <div class="flex items-center justify-evenly mb-3">
+      <ng-container
+        *ngIf="userState$ | async as userState"
+        [ngSwitch]="userState.dataState"
+      >
+        <ng-container *ngSwitchCase="DataState.LOADING_STATE"
+          >LOADING</ng-container
+        ><ng-container *ngSwitchCase="DataState.LOADED_STATE"
+          ><p-avatar
+            label="{{ userState.appData?.data.firstName[0] }}"
+            size="xlarge"
+            shape="circle"
+          ></p-avatar>
+          <p>
+            {{
+              userState.appData?.data.firstName +
+                " " +
+                userState.appData?.data.lastName
+            }}
+          </p> </ng-container
+        ><ng-container *ngSwitchCase="DataState.ERROR_STATE"
+          >ERROR</ng-container
+        ></ng-container
+      >
+    </div>
+    <a routerLink="/user/profile" class="flex items-center gap-5">
+      <i class="fa-regular fa-id-card w-1/6"></i>
+      <p class = "w-5/6 text-left">Hồ sơ</p>
+    </a>
+    <a routerLink="/user/reset-password" class="flex items-center gap-5">
+      <i class="fa-solid fa-key w-1/6"></i>
+      <p class = "w-5/6 text-left">Đổi mật khẩu</p>
+    </a>
+    <a routerLink="/user/history" class="flex items-center gap-5">
+      <i class="fa-regular fa-file-lines w-1/6"></i>
+      <p class = "w-5/6 text-left">Lịch sử của tôi</p>
+    </a>
+  </div>
+  <div class="col-start-3 col-end-13">
+    <router-outlet></router-outlet>
+  </div>
+</section>

@@ -1,0 +1,85 @@
+<section class="my-5">
+  <p-carousel [value]="banners" [numVisible]="2" [numScroll]="1" [circular]="true" [autoplayInterval]="3000"
+    [showIndicators]="false" [responsiveOptions]="responsiveOptions">
+    <ng-template let-banner pTemplate="item">
+      <div class="mx-3">
+        <img class="w-full h-56 rounded-lg" src="{{ banner.img }}" alt="" />
+      </div>
+    </ng-template>
+  </p-carousel>
+</section>
+
+<section class="my-5 bg-rose-400 p-5 rounded-lg grid grid-cols-7 justify-center items-center gap-x-5">
+  <div class="flex items-center bg-white rounded-lg col-start-1 col-end-3">
+    <i class="fa-solid fa-magnifying-glass text-3xl pl-1"></i>
+    <!-- <input class="w-full h-14 pl-3 outline-none rounded-r-lg" type="text" name="place" id="place"
+      placeholder="Đà Lạt" /> -->
+      <select [(ngModel)]="provinceId" class="flex-1 h-14 border-black rounded-lg" id="province">
+        <option *ngFor="let province of provinces" value="{{ province.id }}">
+          {{ province.name }}
+        </option>
+      </select>
+  </div>
+  <div class="flex justify-between items-center rounded-lg bg-white col-start-3 col-end-5">
+    <i class="fa-regular fa-calendar text-3xl pl-1"></i>
+    <p-calendar [styleClass]="'w-full h-14'" [inputStyleClass]="'shadow-none w-full text-center border-none rounded-lg'"
+      selectionMode="range" [readonlyInput]="true" inputId="range" [numberOfMonths]="2"
+      [(ngModel)]="rangeDates"></p-calendar>
+  </div>
+  <div class="flex bg-white items-center rounded-lg col-start-5 col-end-7">
+    <i class="fa-regular fa-user text-3xl pl-1"></i>
+    <input  [(ngModel)]="numPeople" class="w-full h-14 pl-3 outline-none rounded-lg" type="text" name="numnPeople" id="numnPeople" />
+  </div>
+  <button (click)="search()" class="w-full h-14 rounded-md bg-rose-700 text-white font-bold text-lg" type="submit">
+    Tìm kiếm
+  </button>
+</section>
+
+<section class="my-5">
+  <h1 class="text-2xl font-bold">Ưu đãi</h1>
+  <h2>Khuyến mãi, giảm giá và ưu đãi đặc biệt dành riêng cho bạn</h2>
+  <p-carousel styleClass="mt-3" [value]="promotions" [numVisible]="2" [numScroll]="1" [circular]="true"
+    [showIndicators]="false" [responsiveOptions]="responsiveOptions">
+    <ng-template let-promotion pTemplate="item">
+      <div class="relative">
+        <div class="mx-3">
+          <img class="w-full h-44 rounded-lg" src="{{ promotion.img }}" alt="" />
+        </div>
+        <div class="absolute inset-y-0 left-0 pt-5">
+          <div class="pl-5 flex flex-col">
+            <h3 class="text-white text-lg">{{ promotion.title }}</h3>
+            <h4 class="text-white text-sm">{{ promotion.desc }}</h4>
+            <button class="mt-2 text-white w-max p-3 rounded-lg bg-rose-700">
+              Khám phá
+            </button>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </p-carousel>
+</section>
+
+<section class="my-5">
+  <ng-container *ngIf="provinceState$ | async as provinceState" [ngSwitch]="provinceState.dataState">
+    <ng-container *ngSwitchCase="DataState.LOADING_STATE">
+      <p-skeleton width="12rem" height="10rem"></p-skeleton>
+    </ng-container>
+    <h1 class="text-2xl font-bold">Khám phá Việt Nam</h1>
+    <h2>Các điểm đến phổ biến này có nhiều điều chờ đón bạn</h2>
+    <ng-container *ngSwitchCase="DataState.LOADED_STATE">
+      <p-carousel styleClass="mt-3" [value]="provinceState.appData?.data" [numVisible]="6" [numScroll]="1"
+        [circular]="true" [showIndicators]="false" [responsiveOptions]="responsiveOptions">
+        <ng-template let-province pTemplate="item">
+          <a routerLink="/hotel/{{ province.id }}" class="flex flex-col mx-3 cursor-pointer">
+            <img class="w-full h-40 rounded-lg mb-5" src="{{ province.image }}" alt="" />
+            <h3>{{ province.name }}</h3>
+            <h4>{{ province.placeNumber }} chỗ nghỉ</h4>
+          </a>
+        </ng-template>
+      </p-carousel>
+    </ng-container>
+    <ng-container *ngSwitchCase="DataState.ERROR_STATE">
+      Error: Error
+    </ng-container>
+  </ng-container>
+</section>

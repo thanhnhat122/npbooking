@@ -1,0 +1,50 @@
+<div class="p-2">
+  <p-toast></p-toast>
+  <p class="hidden">
+    {{ userProfileState$ | async | json }}
+  </p>
+  <form class="flex flex-col gap-3" >
+    <div class="flex">
+      <label class="min-w-[200px]" for="email">Email</label>
+      <input
+        class="border-2 flex-1 border-black rounded-lg"
+        type="text"
+        [(ngModel)]="user.email"
+        name="email"
+        id="email"
+        readonly
+      />
+    </div>
+    <div class="flex">
+      <label class="min-w-[200px]" for="firstName">Tên</label>
+      <input
+        class="border-2 flex-1 border-black rounded-lg"
+        type="text"
+        [(ngModel)]="user.firstName"
+        name="firstName"
+        id="firstName"
+      />
+    </div>
+    <div class="flex">
+      <label class="min-w-[200px]" for="lastName">Họ</label>
+      <input
+        class="border-2 flex-1 border-black rounded-lg"
+        type="text"
+        [(ngModel)]="user.lastName"
+        name="lastName"
+        id="lastName"
+      />
+    </div>
+    <div class="flex">
+      <label class="min-w-[200px]" for="phone">Số điện thoại</label>
+      <input
+        class="border-2 flex-1 border-black rounded-lg"
+        type="text"
+        [(ngModel)]="user.phone"
+        name="phone"
+        id="phone"
+      />
+    </div>
+    <button type="submit" class="bg-rose-700 text-white " (click)="onSubmit()" style="padding: 10px 30px 10px 30px;width: 200px">Cập nhật thông tin</button>
+  </form>
+</div>

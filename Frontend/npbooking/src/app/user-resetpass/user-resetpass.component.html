@@ -1,0 +1,41 @@
+<section class="bg-gray-50 dark:bg-gray-900">
+<p-toast></p-toast>
+  <div class="mb-3">
+    <label for="pwd" class="form-label">Mật khẩu cũ:</label>
+    <div class="input-group mb-3">
+    <input (keyup)="setOldPassword($event)" type="password" class="form-control" id="opswd"
+      placeholder="Mật khẩu cũ" name="opswd">
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary" type="button" id="btnopswd">
+          <span class="fas fa-eye"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <label for="pwd" class="form-label">Mật khẩu mới:</label>
+    <div class="input-group mb-3">
+      <input (keyup)="setNewPassword($event)" type="password" class="form-control" id="npswd"
+      placeholder="Mật khẩu mới" name="npswd">
+      <button class="btn btn-outline-secondary" type="button" id="btnnpswd">
+        <span class="fas fa-eye"></span>
+      </button>
+    </div>
+
+  </div>
+
+  <div class="mb-3">
+    <label for="pwd" class="form-label">Nhập lại mật khẩu mới:</label>
+    <div class="input-group mb-3">
+      <input (keyup)="setReEnterNewPassword($event)" type="password" class="form-control" id="renpswd"
+      placeholder="Nhập lại mật khẩu mới" name="renpswd">
+      <button class="btn btn-outline-secondary" type="button" id="btnrenpswd">
+        <span class="fas fa-eye"></span>
+      </button>
+    </div>
+
+  </div>
+
+  <button type="submit" class="bg-rose-700 text-white" (click)="onSubmit()" style="padding: 10px 30px 10px 30px;width: 200px">Đổi mật khẩu</button>
+</section>

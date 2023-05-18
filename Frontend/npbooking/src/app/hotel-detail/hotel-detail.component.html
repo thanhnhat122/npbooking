@@ -1,0 +1,411 @@
+<div>
+  <p-toast></p-toast>
+  <ng-container *ngIf="imgHotelState$ | async as imgHotelState" [ngSwitch]="imgHotelState.dataState">
+    <ng-container *ngSwitchCase="DataState.LOADING_STATE">
+      LOADING
+    </ng-container>
+    <ng-container *ngSwitchCase="DataState.LOADED_STATE">
+      <div class="grid grid-cols-2 gap-2" *ngIf="imgHotelState.appData?.data as img">
+        <div class="row-span-2">
+          <div class="relative">
+            <img (click)="displayImgHotel = true" class="cursor-pointer rounded-lg w-full h-[308px]"
+              src="{{ img[0].link }}" alt="" />
+
+            <div class="bg-black/70 cursor-pointer p-2 m-2 rounded-lg w-max absolute bottom-0 right-0">
+              <p (click)="displayImgHotel = true" class="text-lg text-white font-bold">
+                Xem thêm {{ img.length - 7 }} ảnh
+              </p>
+              <p-galleria [value]="img" [(visible)]="displayImgHotel" [containerStyle]="{ 'max-width': '50%' }"
+                [numVisible]="9" [circular]="true" [fullScreen]="true" [showItemNavigators]="true"
+                [baseZIndex]="100000">
+                <ng-template pTemplate="item" let-item>
+                  <img [src]="item.link" style="width: 100%; display: block; height: 70vh" />
+                </ng-template>
+                <ng-template pTemplate="thumbnail" let-item>
+                  <div class="grid grid-nogutter justify-content-center">
+                    <img [src]="item.link" style="display: block; height: 60px; width: 60px" />
+                  </div>
+                </ng-template>
+              </p-galleria>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2">
+          <img (click)="displayImgHotel = true" class="cursor-pointer rounded-lg w-full h-[150px]"
+            src="{{ img[1].link }}" alt="" />
+          <img (click)="displayImgHotel = true" class="cursor-pointer rounded-lg w-full h-[150px]"
+            src="{{ img[2].link }}" alt="" />
+          <img (click)="displayImgHotel = true" class="cursor-pointer rounded-lg w-full h-[150px]"
+            src="{{ img[3].link }}" alt="" />
+          <img (click)="displayImgHotel = true" class="cursor-pointer rounded-lg w-full h-[150px]"
+            src="{{ img[4].link }}" alt="" />
+          <img (click)="displayImgHotel = true" class="cursor-pointer rounded-lg w-full h-[150px]"
+            src="{{ img[5].link }}" alt="" />
+          <img (click)="displayImgHotel = true" class="cursor-pointer rounded-lg w-full h-[150px]"
+            src="{{ img[6].link }}" alt="" />
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngSwitchCase="DataState.ERROR_STATE">ERROR</ng-container>
+  </ng-container>
+  <ng-container *ngIf="hotelState$ | async as hotelState" [ngSwitch]="hotelState.dataState">
+    <ng-container *ngSwitchCase="DataState.LOADING_STATE">
+      LOADING
+    </ng-container>
+    <ng-container *ngSwitchCase="DataState.LOADED_STATE">
+      <div class="grid grid-cols-5">
+        <div class="col-span-4 flex flex-col gap-3">
+          <h1 class="text-3xl font-bold">
+            {{ hotelState.appData?.data.name }}
+          </h1>
+          <div class="flex gap-1">
+            <i *ngFor="let _ of [].constructor(hotelState.appData?.data.star)"
+              class="fa-solid fa-star text-yellow-300"></i>
+          </div>
+          <h3 class="text-lg font-bold">
+            <i class="fa-solid fa-location-dot"></i>
+            {{ hotelState.appData?.data.address }}
+          </h3>
+          <p class="whitespace-pre-line">
+            {{
+            readMore
+            ? hotelState.appData?.data.description
+            : (hotelState.appData?.data.description | slice : 0 : 250)
+            }}
+            <span *ngIf="!readMore">... </span>
+            <a class="cursor-pointer text-rose-700 font-bold px-2 py-1 rounded-2xl" (click)="readMore = !readMore">{{
+              readMore ? "Thu gọn" : " Mở rộng" }}</a>
+          </p>
+          <div>
+            <h2 class="text-2xl font-bold">Tiện nghi</h2>
+            <div class="grid grid-cols-5">
+              <div *ngFor="
+                  let benefit of hotelState.appData?.data.benefit.split(',')
+                ">
+                <div class="flex items-center gap-2">
+                  <i class="text-xl fa-solid fa-circle-check"></i>
+                  <p>{{ benefit }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="">
+          <div class="p-2 flex items-center justify-end gap-2">
+            <p class="text-2xl p-2 rounded-l-3xl rounded-tr-3xl bg-rose-700 font-bold text-white">
+              {{ score | number : "1.1-1" }}
+            </p>
+            <div>
+              <p class="text-xl font-bold">{{ textReview }}</p>
+              <p>{{ numReview }} đánh giá</p>
+            </div>
+          </div>
+          <p (click)="showReview()" class="cursor-pointer text-end font-bold text-rose-700">
+            Xem tất cả đánh giá
+          </p>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngSwitchCase="DataState.ERROR_STATE"> ERROR </ng-container>
+  </ng-container>
+
+  <h3 class="text-2xl font-bold mt-5">Phòng trống</h3>
+  <div class="bg-rose-400 p-3 w-max rounded-lg my-5">
+    <div class="font-bold">Ngày nhận phòng - Ngày trả phòng</div>
+    <div class="flex items-center gap-2">
+      <div class="flex w-max justify-between items-center rounded-lg bg-white">
+        <i class="fa-regular fa-calendar text-2xl pl-1"></i>
+        <p-calendar [(ngModel)]="rangeDates" styleClass="w-full h-9"
+          inputStyleClass="shadow-none w-full text-center border-none rounded-lg" selectionMode="range"
+          [readonlyInput]="true" inputId="range" [numberOfMonths]="2"></p-calendar>
+      </div>
+      <button (click)="search()" class="h-9 px-2 rounded-lg bg-rose-700 text-white">
+        Tìm
+      </button>
+    </div>
+  </div>
+  <ng-container *ngIf="roomHotelState$ | async as roomHotelState" [ngSwitch]="roomHotelState.dataState">
+    <ng-container *ngSwitchCase="DataState.LOADING_STATE">
+      LOADING
+    </ng-container>
+    <ng-container *ngSwitchCase="DataState.LOADED_STATE">
+      <div class="grid grid-cols-4 gap-3">
+        <div class="col-span-3">
+          <p-table [value]="roomHotelState.appData?.data" styleClass="p-datatable-gridlines"
+            [tableStyle]="{ 'min-width': '50rem' }">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Loại phòng</th>
+                <th>Sức chứa</th>
+                <th>Giá</th>
+                <th>Số lượng</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-room>
+              <tr>
+                <td>
+                  <p-dialog [(visible)]="modalRoomDetail" [modal]="true" [style]="" [draggable]="false"
+                    [resizable]="false">
+                    <div class="grid grid-cols-2 gap-3">
+                      <ng-container *ngIf="imgRoomState$ | async as imgRoomState" [ngSwitch]="imgRoomState.dataState">
+                        <ng-container *ngSwitchCase="DataState.LOADING_STATE">
+                          LOADING
+                        </ng-container>
+                        <ng-container *ngSwitchCase="DataState.LOADED_STATE">
+                          <p-galleria [value]="imgRoomState.appData?.data" [containerStyle]="{ 'max-width': '640px' }"
+                            [numVisible]="5">
+                            <ng-template pTemplate="item" let-item>
+                              <img [src]="item.link" style="width: 100%" />
+                            </ng-template>
+                            <ng-template pTemplate="thumbnail" let-item>
+                              <div class="grid grid-nogutter justify-content-center">
+                                <img class="w-14 h-14" [src]="item.link" />
+                              </div>
+                            </ng-template>
+                          </p-galleria> </ng-container><ng-container *ngSwitchCase="DataState.ERROR_STATE">
+                          ERROR
+                        </ng-container></ng-container>
+                      <ng-container *ngIf="roomState$ | async as roomState" [ngSwitch]="roomState.dataState">
+                        <ng-container *ngSwitchCase="DataState.LOADING_STATE">
+                          LOADING
+                        </ng-container>
+                        <ng-container *ngSwitchCase="DataState.LOADED_STATE">
+                          <div class="flex flex-col space-y-3">
+                            <h1 class="text-lg font-bold">
+                              {{ roomState.appData?.data.type }}
+                            </h1>
+                            <div class="grid grid-cols-2">
+                              <div *ngFor="
+                                  let benefit of roomState.appData?.data.benefitRoom.split(',')">
+                                <div class="flex items-center gap-2">
+                                  <i class="text-xl fa-solid fa-circle-check"></i>
+                                  <p>{{benefit}}</p>
+                                </div>
+                              </div>
+                            </div>
+                            <p class="font-bold">Diện tích: {{ roomState.appData?.data.size }}</p>
+                            <div>
+                              <p class="font-bold">Trong phòng tắm chung của bạn</p>
+                              <div class="grid grid-cols-2">
+                                <div *ngFor="
+                                    let bath of roomState.appData?.data.bathRoom.split(',')">
+                                  <div class="flex items-center gap-2">
+                                    <i class="text-xl fa-solid fa-circle-check"></i>
+                                    <p>{{bath}}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div>
+                              <p class="font-bold">Hướng tầm nhìn</p>
+                              <div class="grid grid-cols-2">
+                                <div *ngFor="
+                                    let view of roomState.appData?.data.view.split(',')">
+                                  <div class="flex items-center gap-2">
+                                    <i class="text-xl fa-solid fa-circle-check"></i>
+                                    <p>{{view}}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div>
+                              <p class="font-bold">Tiện nghi</p>
+                              <div class="grid grid-cols-2">
+                                <div *ngFor="
+                              let convenient of roomState.appData?.data.convenient.split(',')">
+                                  <div class="flex items-center gap-2">
+                                    <i class="text-xl fa-solid fa-circle-check"></i>
+                                    <p>{{convenient}}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <p class="font-bold">Hút thuốc: {{ roomState.appData?.data.smoking ? 'Được hút thuốc' :
+                              'Không hút thuốc' }}</p>
+                            <button class="justify-self-end">Đặt ngay</button>
+
+                          </div>
+
+                        </ng-container>
+                        <ng-container *ngSwitchCase="DataState.ERROR_STATE">
+                          ERROR
+                        </ng-container>
+
+                      </ng-container>
+                    </div>
+                  </p-dialog>
+                  <h4 (click)="showRoomDetailModal(room.id)" class="underline cursor-pointer">
+                    {{ room.type }}
+                  </h4>
+
+                  <p *ngIf="room.remainRoom < 10" class="bg-rose-700 mt-1 text-white font-bold rounded-full px-2 w-max">
+                    <i class="fa-brands fa-hotjar text-yellow-400"></i> Còn
+                    {{ room.remainRoom }} phòng
+                  </p>
+                  <p *ngIf="room.doubleBed > 0" class="text-sm">
+                    <i class="fa-solid fa-bed"></i> {{ room.doubleBed }} giường
+                    đôi
+                  </p>
+                  <p *ngIf="room.singleBed > 0" class="text-sm">
+                    <i class="fa-solid fa-bed"></i>
+                    {{ room.singleBed }} giường đơn
+                  </p>
+                  <p class="text-sm">
+                    <i class="fa-solid fa-ruler-combined"></i> {{ room.size }}
+                  </p>
+                </td>
+                <td>
+                  <i class="fa-solid fa-user-large"></i>
+                  {{ "x " + room.peopleNumber }}
+                </td>
+                <td>
+                  <p>Giá cho {{ room.numNight }} đêm</p>
+                  <p class="text-rose-700 line-through">
+                    VND
+                    {{
+                    (room.price * room.numNight | number)
+                    ?.replace(",", "x")
+                    ?.replace(",", ".")
+                    ?.replace("x", ".")
+                    }}
+                  </p>
+                  <p class="font-bold text-xl">
+                    VND
+                    {{
+                    ((room.price - room.discount) * room.numNight | number)
+                    ?.replace(",", "x")
+                    ?.replace(",", ".")
+                    ?.replace("x", ".")
+                    }}
+                  </p>
+                  <p class="p-2 bg-green-600 rounded-lg text-sm text-white w-max">
+                    Tiết kiệm
+                    {{ room.discount / room.price | percent }}
+                  </p>
+                </td>
+                <td>
+                  <select class="border-2 border-black rounded-lg p-1" (change)="
+                      totalPrice(
+                        room.price * room.numNight,
+                        (room.price - room.discount) * room.numNight,
+                        room.id,
+                        room.type,
+                        $event
+                      )
+                    " name="room-price" id="room-price">
+                    <option *ngFor="
+                        let _ of [].constructor(room.remainRoom + 1);
+                        let i = index
+                      " [value]="i">
+                      {{ i }}
+                      <p *ngIf="i > 0">
+                        {{
+                        " (VND " +
+                        (
+                        (room.price - room.discount) * room.numNight * i
+                        | number
+                        )
+                        ?.replace(",", "x")
+                        ?.replace(",", ".")
+                        ?.replace("x", ".") +
+                        ")"
+                        }}
+                      </p>
+                    </option>
+                  </select>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+        <div class="border-2 border-black rounded-lg h-max">
+          <div class="p-2" *ngIf="finalPrice > 0; else selectRoom">
+            <p class="text-2xl font-bold text-center">Tổng tiền</p>
+            <div class="flex justify-between">
+              <div>
+                <div class="line-through text-lg text-rose-700">
+                  VND
+                  {{
+                  (finalPrice | number)
+                  ?.replace(",", "x")
+                  ?.replace(",", ".")
+                  ?.replace("x", ".")
+                  }}
+                </div>
+                <p class="text-2xl font-bold">
+                  VND
+                  {{
+                  (finalDiscounted | number)
+                  ?.replace(",", "x")
+                  ?.replace(",", ".")
+                  ?.replace("x", ".")
+                  }}
+                </p>
+              </div>
+              <p class="text-white bg-green-600 h-max p-2 rounded-lg">
+                Tiết kiệm
+                {{ (finalPrice - finalDiscounted) / finalPrice | percent }}
+              </p>
+            </div>
+            <div *ngIf="!isLogged; else logged">
+              <p class="my-5">
+                <a (click)="redirectToLogin()" class="cursor-pointer bg-rose-700 rounded-lg text-white p-2">Đăng
+                  nhập</a>
+                để tiếp tục
+              </p>
+              <p class="mb-5">
+                Bạn chưa có tài khoản?
+                <a class="text-rose-700 font-bold">Đăng ký</a>
+              </p>
+            </div>
+            <ng-template #logged>
+              <div class="flex justify-between">
+                <button (click)="booking()" class="bg-rose-700 text-white p-2 rounded-lg mt-5">
+                  Đặt phòng
+                </button>
+                <button (click)="paypal()" class="bg-rose-700 text-white p-2 rounded-lg mt-5">
+                  Thanh toán với Paypal
+                </button>
+              </div>
+            </ng-template>
+          </div>
+          <ng-template #selectRoom>
+            <p class="text-center font-bold text-xl p-2">
+              Vui lòng chọn phòng muốn đặt
+            </p>
+          </ng-template>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngSwitchCase="DataState.ERROR_STATE"> ERROR </ng-container>
+  </ng-container>
+  <p-sidebar [style]="{ width: '50%' }" [(visible)]="showReviews" position="right" [baseZIndex]="10000">
+    <ng-template pTemplate="header">Các đánh giá từ khách hàng</ng-template>
+    <div>
+      <div class="divide-y">
+        <ng-container *ngIf="reviewState$ | async as reviewState" [ngSwitch]="reviewState.dataState">
+          <ng-container *ngSwitchCase="DataState.LOADING_STATE">
+            LOADING
+          </ng-container>
+          <ng-container *ngSwitchCase="DataState.LOADED_STATE">
+            <div *ngFor="let review of reviewState.appData?.data" class="grid grid-cols-12 items-center py-5">
+              <p class="col-span-3">
+                {{ review.userEmail.split("@")[0] }}
+              </p>
+              <div class="col-span-8">{{ review.comment }}</div>
+              <div class="ml-3">
+                <p class="pt-1 text-center rounded-lg w-9 h-9 text-white bg-rose-700">
+                  {{ review.rate }}
+                </p>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngSwitchCase="DataState.ERROR_STATE">
+            ERROR
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+  </p-sidebar>
+</div>
